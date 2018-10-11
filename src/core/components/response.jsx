@@ -99,9 +99,21 @@ export default class Response extends React.Component {
       const oas3SchemaForContentType = mediaType.get("schema", Map({}))
 
       if(mediaType.get("example") !== undefined) {
-        sampleSchema = stringify(mediaType.get("example"))
+        let example = mediaType.get("example")
+
+        // added this to remove accidental "$$ref" property from request/response singular examples
+        example = example.set ? example.set('$$ref', undefined) : example
+
+        sampleSchema = stringify(example)
       } else {
-        sampleSchema = getSampleSchema(oas3SchemaForContentType.toJS(), this.state.responseContentType, {
+        let schema = oas3SchemaForContentType.toJS()
+
+        // added this to remove accidental "$$ref" property from schema examples
+        if (schema.example !== undefined && schema.example.$$ref !== undefined) {
+          delete schema.example.$$ref
+        }
+
+        sampleSchema = getSampleSchema(schema, this.state.responseContentType, {
           includeReadOnly: true
         })
       }
