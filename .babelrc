@@ -6,16 +6,32 @@
   ],
   "plugins": [
     "transform-runtime",
+    "babel-plugin-transform-es2015-constants",
+    ["transform-react-remove-prop-types", {
+      "additionalLibraries": ["react-immutable-proptypes"]
+    }],
     [
       "module-alias",
       [
+        {
+          "expose": "root",
+          "src": "."
+        },
         {
           "expose": "components",
           "src": "src/core/components"
         },
         {
+          "expose": "containers",
+          "src": "src/core/containers"
+        },
+        {
           "expose": "core",
           "src": "src/core"
+        },
+        {
+          "expose": "plugins",
+          "src": "src/plugins"
         },
         {
           "expose": "img",
@@ -28,10 +44,6 @@
         {
           "expose": "less",
           "src": "src/less"
-        },
-        {
-          "expose": "base",
-          "src": "npm:getbase/src/less/base"
         }
       ]
     ]

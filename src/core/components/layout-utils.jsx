@@ -1,6 +1,5 @@
 import React from "react"
 import PropTypes from "prop-types"
-import OriCollapse from "react-collapse"
 
 function xclass(...args) {
   return args.filter(a => !!a).join(" ").trim()
@@ -57,6 +56,9 @@ export class Col extends React.Component {
     let classesAr = []
 
     for (let device in DEVICES) {
+      if (!DEVICES.hasOwnProperty(device)) {
+        continue
+      }
       let deviceClass = DEVICES[device]
       if(device in this.props) {
         let val = this.props[device]
@@ -183,7 +185,7 @@ export class Select extends React.Component {
         { allowEmptyValue ? <option value="">--</option> : null }
         {
           allowedValues.map(function (item, key) {
-            return <option key={ key } value={ String(item) }>{ item }</option>
+            return <option key={ key } value={ String(item) }>{ String(item) }</option>
           })
         }
       </select>
@@ -194,7 +196,7 @@ export class Select extends React.Component {
 export class Link extends React.Component {
 
   render() {
-    return <a {...this.props} className={xclass(this.props.className, "link")}/>
+    return <a {...this.props} rel="noopener noreferrer" className={xclass(this.props.className, "link")}/>
   }
 
 }
@@ -240,11 +242,9 @@ export class Collapse extends React.Component {
 
     children = isOpened ? children : null
     return (
-      <OriCollapse isOpened={isOpened}>
-        <NoMargin>
-          {children}
-        </NoMargin>
-      </OriCollapse>
+      <NoMargin>
+        {children}
+      </NoMargin>
     )
   }
 

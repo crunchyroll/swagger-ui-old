@@ -4,7 +4,7 @@ We love contributions from our community of users! This document explains our gu
 
 #### Environment setup
 
-0. Install Node.js (4 or newer) and npm (3 or newer).
+0. Install Node.js (6 or newer) and npm (3 or newer).
 1. Make a fork of Swagger-UI on GitHub, then clone your fork to your machine.
 2. Run `npm install` in your Swagger-UI directory.
 3. Run `npm run dev`. `localhost:3200` should open automatically.
@@ -52,3 +52,7 @@ _Adapted from [How to Write a Git Commit Message](https://chris.beams.io/posts/g
 - **Don't** include any changes to files in the `dist/` directory - we update those files only during releases.
 - **Don't** mention maintainers in your original PR body - we probably would've seen it anyway, so it just increases the noise in our inboxes. Do feel free to ping maintainers if a week has passed and you've heard nothing from us.
 - **Don't** open PRs for custom functionality that only serves a small subset of our users - custom functionality should be implemented outside of our codebase, via a plugin.
+
+#### Merging pull requests
+- **Do** use GitHub's `Squash and merge` strategy.
+- **Do** follow the [Conventional Commits](https://conventionalcommits.org) standard format for your squash commit.

@@ -39,6 +39,13 @@ export default class Oauth2 extends React.Component {
     }
   }
 
+  close = (e) => {
+    e.preventDefault()
+    let { authActions } = this.props
+
+    authActions.showDefinitions(false)
+  }
+
   authorize =() => {
     let { authActions, errActions, getConfigs, authSelectors } = this.props
     let configs = getConfigs()
@@ -200,11 +207,11 @@ export default class Oauth2 extends React.Component {
                 <Row key={ name }>
                   <div className="checkbox">
                     <Input data-value={ name }
-                          id={`${name}-checkbox-${this.state.name}`}
+                          id={`${name}-${flow}-checkbox-${this.state.name}`}
                            disabled={ isAuthorized }
                            type="checkbox"
                            onChange={ this.onScopeChange }/>
-                         <label htmlFor={`${name}-checkbox-${this.state.name}`}>
+                         <label htmlFor={`${name}-${flow}-checkbox-${this.state.name}`}>
                            <span className="item"></span>
                            <div className="text">
                              <p className="name">{name}</p>
@@ -231,6 +238,7 @@ export default class Oauth2 extends React.Component {
         : <Button className="btn modal-btn auth authorize" onClick={ this.authorize }>Authorize</Button>
           )
         }
+          <Button className="btn modal-btn auth btn-done" onClick={ this.close }>Close</Button>
         </div>
 
       </div>

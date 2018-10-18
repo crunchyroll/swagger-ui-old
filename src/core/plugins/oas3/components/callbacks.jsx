@@ -1,10 +1,12 @@
 import React from "react"
 import PropTypes from "prop-types"
+import ImPropTypes from "react-immutable-proptypes"
+import { fromJS } from "immutable"
 
 const Callbacks = (props) => {
-  let { callbacks, getComponent } = props
+  let { callbacks, getComponent, specPath } = props
   // const Markdown = getComponent("Markdown")
-  const Operation = getComponent("operation", true)
+  const OperationContainer = getComponent("OperationContainer", true)
 
   if(!callbacks) {
     return <span>No callbacks</span>
@@ -14,26 +16,31 @@ const Callbacks = (props) => {
     return <div key={callbackName}>
       <h2>{callbackName}</h2>
       { callback.map((pathItem, pathItemName) => {
+        if(pathItemName === "$$ref") {
+          return null
+        }
         return <div key={pathItemName}>
           { pathItem.map((operation, method) => {
-            return <Operation
-              operation={operation}
+            if(method === "$$ref") {
+              return null
+            }
+            let op = fromJS({
+              operation
+            })
+            return <OperationContainer
+              {...props}
+              op={op}
               key={method}
+              tag={""}
               method={method}
-              isShownKey={["callbacks", operation.get("id"), callbackName]}
               path={pathItemName}
+              specPath={specPath.push(callbackName, pathItemName, method)}
               allowTryItOut={false}
-              {...props}></Operation>
-            // return <pre>{JSON.stringify(operation)}</pre>
+              />
           }) }
         </div>
       }) }
     </div>
-    // return <div>
-    //   <h2>{name}</h2>
-    //   {callback.description && <Markdown source={callback.description}/>}
-    //   <pre>{JSON.stringify(callback)}</pre>
-    // </div>
   })
   return <div>
     {callbackElements}
@@ -42,8 +49,8 @@ const Callbacks = (props) => {
 
 Callbacks.propTypes = {
   getComponent: PropTypes.func.isRequired,
-  callbacks: PropTypes.array.isRequired
-
+  callbacks: ImPropTypes.iterable.isRequired,
+  specPath: ImPropTypes.list.isRequired,
 }
 
 export default Callbacks
