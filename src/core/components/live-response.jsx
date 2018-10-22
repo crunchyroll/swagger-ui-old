@@ -1,6 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import ImPropTypes from "react-immutable-proptypes"
+import { Iterable } from "immutable"
 
 const Headers = ( { headers } )=>{
   return (
@@ -28,28 +29,38 @@ Duration.propTypes = {
 
 export default class LiveResponse extends React.Component {
   static propTypes = {
-    response: PropTypes.object.isRequired,
-    specSelectors: PropTypes.object.isRequired,
-    pathMethod: PropTypes.object.isRequired,
-    getComponent: PropTypes.func.isRequired,
+    response: PropTypes.instanceOf(Iterable).isRequired,
+    path: PropTypes.string.isRequired,
+    method: PropTypes.string.isRequired,
     displayRequestDuration: PropTypes.bool.isRequired,
+    specSelectors: PropTypes.object.isRequired,
+    getComponent: PropTypes.func.isRequired,
     getConfigs: PropTypes.func.isRequired
   }
 
+  shouldComponentUpdate(nextProps) {
+    // BUG: props.response is always coming back as a new Immutable instance
+    // same issue as responses.jsx (tryItOutResponse)
+    return this.props.response !== nextProps.response
+      || this.props.path !== nextProps.path
+      || this.props.method !== nextProps.method
+      || this.props.displayRequestDuration !== nextProps.displayRequestDuration
+  }
+
   render() {
-    const { response, getComponent, getConfigs, displayRequestDuration, specSelectors, pathMethod } = this.props
+    const { response, getComponent, getConfigs, displayRequestDuration, specSelectors, path, method } = this.props
     const { showMutatedRequest } = getConfigs()
 
-    const curlRequest = showMutatedRequest ? specSelectors.mutatedRequestFor(pathMethod[0], pathMethod[1]) : specSelectors.requestFor(pathMethod[0], pathMethod[1])
+    const curlRequest = showMutatedRequest ? specSelectors.mutatedRequestFor(path, method) : specSelectors.requestFor(path, method)
     const status = response.get("status")
-    const url = response.get("url")
+    const url = curlRequest.get("url")
     const headers = response.get("headers").toJS()
     const notDocumented = response.get("notDocumented")
     const isError = response.get("error")
     const body = response.get("text")
     const duration = response.get("duration")
     const headersKeys = Object.keys(headers)
-    const contentType = headers["content-type"]
+    const contentType = headers["content-type"] || headers["Content-Type"]
 
     const Curl = getComponent("curl")
     const ResponseBody = getComponent("responseBody")
@@ -118,7 +129,6 @@ export default class LiveResponse extends React.Component {
 
   static propTypes = {
     getComponent: PropTypes.func.isRequired,
-    request: ImPropTypes.map,
     response: ImPropTypes.map
   }
 }

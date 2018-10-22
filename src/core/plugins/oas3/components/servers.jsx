@@ -15,7 +15,11 @@ export default class Servers extends React.Component {
   }
 
   componentDidMount() {
-    let { servers } = this.props
+    let { servers, currentServer } = this.props
+
+    if(currentServer) {
+      return
+    }
 
     //fire 'change' event to set default 'value' of select
     this.setServer(servers.first().get("url"))
@@ -31,7 +35,11 @@ export default class Servers extends React.Component {
     if(this.props.currentServer !== nextProps.currentServer) {
       // Server has changed, we may need to set default values
       let currentServerDefinition = servers
-        .find(v => v.get("url") === nextProps.currentServer) || OrderedMap()
+        .find(v => v.get("url") === nextProps.currentServer)
+
+      if(!currentServerDefinition) {
+        return this.setServer(servers.first().get("url"))
+      }
 
       let currentServerVariableDefs = currentServerDefinition.get("variables") || OrderedMap()
 
@@ -86,6 +94,7 @@ export default class Servers extends React.Component {
       getEffectiveServerValue
     } = this.props
 
+
     let currentServerDefinition = servers.find(v => v.get("url") === currentServer) || OrderedMap()
 
     let currentServerVariableDefs = currentServerDefinition.get("variables") || OrderedMap()
@@ -93,9 +102,8 @@ export default class Servers extends React.Component {
     let shouldShowVariableUI = currentServerVariableDefs.size !== 0
 
     return (
-      <div>
+      <div className="servers">
         <label htmlFor="servers">
-          <span className="servers-title">Servers</span>
           <select onChange={ this.onServerChange }>
             { servers.valueSeq().map(
               ( server ) =>
@@ -109,13 +117,14 @@ export default class Servers extends React.Component {
         </label>
         { shouldShowVariableUI ?
           <div>
-          <h4>Server variables</h4>
+
             <div className={"computed-url"}>
               Computed URL:
               <code>
                 {getEffectiveServerValue(currentServer)}
               </code>
             </div>
+            <h4>Server variables</h4>
             <table>
               <tbody>
                 {
